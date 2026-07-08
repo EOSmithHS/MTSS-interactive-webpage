@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EOS MTSS</title>
+<style>
+  :root{
+    --ink:#1a1a1a;
+    --paper:#ffffff;
+    --rule:#1a1a1a;
+    --tier-bg:#1a1a1a;
+    --tier-fg:#ffffff;
+    --review-bg:#d9d9d9;
+    --box-border:#1a1a1a;
+    --accent:#8a1f1f;
+    --serif: "Georgia", "Times New Roman", serif;
+    --sans: "Helvetica Neue", Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body{
+    margin:0;
+    padding: 24px 12px 60px;
+    background: var(--paper);
+    font-family: var(--sans);
+    color: var(--ink);
+    display:flex;
+    justify-content:center;
+  }
+
+  .chart{
+    width:100%;
+    max-width: 760px;
+  }
+
+  .masthead{
+    text-align:center;
+    margin-bottom: 18px;
+  }
+
+  .masthead h1{
+    font-family: var(--serif);
+    font-weight: 900;
+    font-size: clamp(34px, 7vw, 54px);
+    letter-spacing: 1px;
+    margin: 0 0 4px;
+  }
+
+  .masthead .subtitle{
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 15px;
+    margin: 0 0 8px;
+  }
+
+  .masthead .tagline{
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 15px;
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  .tier-band{
+    background: var(--tier-bg);
+    color: var(--tier-fg);
+    text-align:center;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    padding: 8px 10px;
+    margin: 22px 0 10px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .tier-band:hover, .tier-band:focus-visible{
+    background: var(--accent);
+    outline: none;
+  }
+
+  .cta-row{
+    display:flex;
+    justify-content:center;
+    margin: 14px 0 4px;
+  }
+
+  .cta-row.multi{
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .cta-btn{
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: 13px;
+    padding: 11px 18px;
+    cursor: pointer;
+    text-align:center;
+    transition: background 0.15s ease, transform 0.1s ease;
+  }
+
+  .cta-btn:hover{
+    background: #6e1818;
+    transform: translateY(-1px);
+  }
+
+  .row{
+    display:grid;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .row.cols-3{ grid-template-columns: repeat(3, 1fr); }
+  .row.cols-4{ grid-template-columns: repeat(4, 1fr); }
+  .row.cols-5{ grid-template-columns: repeat(5, 1fr); }
+
+  .note-box{
+    border: 1.5px solid var(--box-border);
+    padding: 10px 12px;
+    font-size: 12.5px;
+    line-height: 1.4;
+    text-align:center;
+  }
+
+  .box{
+    border: 1.5px solid var(--box-border);
+    padding: 10px 8px;
+    font-size: 12.5px;
+    line-height: 1.4;
+    text-align:center;
+    cursor: pointer;
+    background: var(--paper);
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+    position: relative;
+  }
+
+  .box:hover, .box:focus-visible{
+    background: #fff7e8;
+    box-shadow: inset 0 0 0 1.5px var(--accent);
+    outline: none;
+  }
+
+  .box .label{
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 3px;
+  }
+
+  .box .detail{
+    font-weight: 400;
+  }
+
+  .box.finalized::after, .tier-band.finalized::after, .meeting-band.finalized::after, .cta-btn.finalized::after{
+    content: "✓";
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    font-size: 11px;
+    color: #2e7d32;
+    font-weight: 900;
+  }
+
+  .cta-btn{ position: relative; }
+
+  .toolbar{
+    position: sticky;
+    top: 0;
+    z-index: 900;
+    background: #fafafa;
+    border-bottom: 1.5px solid var(--ink);
+    padding: 8px 12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap: 14px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    margin: -24px -12px 18px;
+  }
+
+  .toolbar label{
+    display:flex;
+    align-items:center;
+    gap: 6px;
+    font-weight: 700;
+    cursor:pointer;
+  }
+
+  .toolbar .export-btn{
+    background: var(--ink);
+    color:#fff;
+    border:none;
+    font-weight:700;
+    font-size:13px;
+    padding: 7px 14px;
+    cursor:pointer;
+  }
+
+  .toolbar .export-btn:hover{ background:#333; }
+
+  .toolbar .progress{
+    font-size: 12px;
+    color: #555;
+  }
+
+  body.edit-mode .box, body.edit-mode .tier-band, body.edit-mode .meeting-band{
+    box-shadow: inset 0 0 0 1.5px #b58900;
+  }
+
+  .modal textarea, .modal input[type="text"]{
+    width:100%;
+    font-family: var(--sans);
+    font-size: 13.5px;
+    padding: 8px;
+    border: 1.5px solid #999;
+    margin-bottom: 10px;
+    resize: vertical;
+  }
+
+  .modal label.field-label{
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #555;
+    display:block;
+    margin-bottom: 4px;
+  }
+
+  .modal-actions{
+    display:flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .modal-save{
+    background: #2e7d32;
+    color:#fff;
+    border:none;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 8px 16px;
+    cursor: pointer;
+  }
+
+  .modal-save:hover{ background:#225e26; }
+
+  .meeting-band{
+    background: var(--paper);
+    border: 1.5px solid var(--box-border);
+    text-align:center;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 7px;
+    margin: 4px 0 4px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .meeting-band:hover, .meeting-band:focus-visible{
+    background: #fff7e8;
+    box-shadow: inset 0 0 0 1.5px var(--accent);
+    outline: none;
+  }
+
+  .review-band{
+    background: var(--review-bg);
+    text-align:center;
+    font-weight: 800;
+    font-size: 17px;
+    letter-spacing: 0.5px;
+    padding: 12px;
+    margin-top: 18px;
+    text-transform: uppercase;
+  }
+
+  /* Modal */
+  .modal-overlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(20,20,20,0.55);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding: 20px;
+    z-index: 1000;
+  }
+
+  .modal-overlay.open{ display:flex; }
+
+  .modal{
+    background: var(--paper);
+    max-width: 440px;
+    width:100%;
+    padding: 22px 24px 24px;
+    border-top: 6px solid var(--accent);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+  }
+
+  .modal h3{
+    font-family: var(--serif);
+    font-size: 19px;
+    margin: 0 0 10px;
+  }
+
+  .modal p{
+    font-size: 14px;
+    line-height: 1.55;
+    margin: 0 0 14px;
+    white-space: pre-line;
+  }
+
+  .modal p a{
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .modal p a:hover{
+    text-decoration: none;
+  }
+
+  .modal-close{
+    background: var(--ink);
+    color:#fff;
+    border:none;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 8px 16px;
+    cursor: pointer;
+  }
+
+  .modal-close:hover{ background: #333; }
+
+  @media (max-width: 540px){
+    .row.cols-3, .row.cols-5{ grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <label><input type="checkbox" id="edit-mode-toggle"> Edit Mode</label>
+  <span class="progress" id="progress-counter"></span>
+  <button class="export-btn" id="export-btn">Export Final HTML</button>
+</div>
+
+<div class="chart">
+
+  <div class="masthead">
+    <h1>EOS MTSS</h1>
+    <p class="subtitle">(Multi-Tiered System of Supports)</p>
+    <p class="tagline">Students in need receive data-driven support in a timely manner<br>that is clearly communicated and maximizes time.</p>
+  </div>
+
+  <!-- TIER 1 -->
+  <div class="tier-band" data-key="banner-t1" tabindex="0">Tier 1 Instruction and Support</div>
+  <div class="row cols-3">
+    <div class="box" data-key="t1-tutoring" tabindex="0">
+      <span class="label">Peer tutoring and mentoring</span>
+    </div>
+    <div class="box" data-key="t1-studyhall" tabindex="0">
+      <span class="label">Academic study halls</span><br>
+      <span class="detail">Math, Science, Humanities, Freshmen<br>provides structured study halls</span>
+    </div>
+    <div class="box" data-key="t1-studentcenter" tabindex="0">
+      <span class="label">Student Center sessions</span><br>
+      <span class="detail">not reoccuring &amp; no walk-ins</span>
+    </div>
+  </div>
+  <div class="cta-row">
+    <a class="cta-btn" id="link-t1-request" data-link-key="link-t1-request" href="#" target="_blank" rel="noopener">Click here to request and schedule a Tier 1 intervention</a>
+  </div>
+
+  <!-- TIER 2 referrals and support -->
+  <div class="tier-band" data-key="banner-t2" tabindex="0">Tier 2 Referrals and Support</div>
+  <div class="note-box" style="margin-bottom:8px;">
+    On a weekly basis students will be reviewed through these lenses and discussed with teachers.
+    Teacher should contact the appropriate staff with student concerns in each of the categories listed.
+  </div>
+  <div class="row cols-4">
+    <div class="box" data-key="t2-academic" tabindex="0">
+      <span class="label">Academic:</span><br>
+      <span class="detail">SAT review by counselors</span>
+    </div>
+    <div class="box" data-key="t2-behavioral" tabindex="0">
+      <span class="label">Behavioral:</span><br>
+      <span class="detail">Discipline referrals to admins</span>
+    </div>
+    <div class="box" data-key="t2-socialemotional" tabindex="0">
+      <span class="label">Social-Emotional:</span><br>
+      <span class="detail">CAT review by social workers &amp; counselors</span>
+    </div>
+    <div class="box" data-key="t2-attendance" tabindex="0">
+      <span class="label">Attendance Review Team</span> (formerly REACH):<br>
+      <span class="detail">Omar/Lou/Sam</span>
+    </div>
+  </div>
+  <div class="meeting-band" data-key="banner-meeting" tabindex="0">MTSS Team Meeting: Weekly, one hour</div>
+  <div class="cta-row multi">
+    <a class="cta-btn" id="link-refer-mtss" data-link-key="link-refer-mtss" href="#" target="_blank" rel="noopener">Refer a student to MTSS</a>
+    <a class="cta-btn" id="link-mtss-agenda" data-link-key="link-mtss-agenda" href="#" target="_blank" rel="noopener">View MTSS meeting agenda</a>
+  </div>
+
+  <!-- TIER 2 action steps -->
+  <div class="tier-band" data-key="banner-t2-action" tabindex="0">Tier 2 Action Steps</div>
+  <div class="row cols-5">
+    <div class="box" data-key="t2a-literacy" tabindex="0">
+      <span class="detail">Literacy screenings and scheduled support</span>
+    </div>
+    <div class="box" data-key="t2a-tutoring" tabindex="0">
+      <span class="detail">Peer tutoring and mentoring</span>
+    </div>
+    <div class="box" data-key="t2a-studyhall" tabindex="0">
+      <span class="detail">Academic study halls: Math, Science, Humanities, Freshmen</span>
+    </div>
+    <div class="box" data-key="t2a-studentcenter" tabindex="0">
+      <span class="detail">Student Center scheduled support</span>
+    </div>
+    <div class="box" data-key="t2a-supportgroups" tabindex="0">
+      <span class="detail">Support groups or appointments</span>
+    </div>
+  </div>
+
+  <div class="review-band">Review after 6&ndash;8 weeks</div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <!-- View mode -->
+    <div id="view-mode-content">
+      <h3 id="modal-title">Title</h3>
+      <p id="modal-body">Description goes here.</p>
+      <button class="modal-close" id="modal-close">Close</button>
+    </div>
+    <!-- Edit mode -->
+    <div id="edit-mode-content" style="display:none;">
+      <label class="field-label" for="edit-title">Pop-up title</label>
+      <input type="text" id="edit-title">
+      <label class="field-label" for="edit-body">Pop-up text</label>
+      <textarea id="edit-body" rows="6"></textarea>
+      <p style="font-size:11px; color:#777; margin:-6px 0 10px;">
+        Tip: to add a hyperlink, type <code>[link text](https://...)</code> — or just paste a full web address and it'll become clickable automatically.
+      </p>
+      <div class="modal-actions">
+        <button class="modal-save" id="modal-save">Save as Final</button>
+        <button class="modal-close" id="modal-cancel">Cancel</button>
+      </div>
+    </div>
+    <!-- Link edit mode -->
+    <div id="link-edit-content" style="display:none;">
+      <label class="field-label" for="edit-link-label">Button text</label>
+      <input type="text" id="edit-link-label">
+      <label class="field-label" for="edit-link-url">Link URL</label>
+      <input type="text" id="edit-link-url" placeholder="https://...">
+      <div class="modal-actions">
+        <button class="modal-save" id="link-save">Save as Final</button>
+        <button class="modal-close" id="link-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script id="popup-data">
+  // Placeholder content for each clickable box.
+  // Edit Mode lets you fill these in directly on the page; "Save as Final" locks each one.
+  window.POPUP_DATA = {
+    "banner-t1": { title: "Tier 1 Instruction and Support", body: "Add description here.", finalized: false },
+    "t1-tutoring": { title: "Peer Tutoring and Mentoring", body: "Add description here.", finalized: false },
+    "t1-studyhall": { title: "Academic Study Halls", body: "Add description here.", finalized: false },
+    "t1-studentcenter": { title: "Student Center Sessions", body: "Add description here.", finalized: false },
+    "banner-t2": { title: "Tier 2 Referrals and Support", body: "Add description here.", finalized: false },
+    "t2-academic": { title: "Academic Referral", body: "Add description here.", finalized: false },
+    "t2-behavioral": { title: "Behavioral Referral", body: "Add description here.", finalized: false },
+    "t2-socialemotional": { title: "Social-Emotional Referral", body: "Add description here.", finalized: false },
+    "t2-attendance": { title: "Attendance Review Team", body: "Add description here.", finalized: false },
+    "banner-meeting": { title: "MTSS Team Meeting", body: "Add description here.", finalized: false },
+    "banner-t2-action": { title: "Tier 2 Action Steps", body: "Add description here.", finalized: false },
+    "t2a-literacy": { title: "Literacy Screenings & Scheduled Support", body: "Add description here.", finalized: false },
+    "t2a-tutoring": { title: "Peer Tutoring and Mentoring", body: "Add description here.", finalized: false },
+    "t2a-studyhall": { title: "Academic Study Halls", body: "Add description here.", finalized: false },
+    "t2a-studentcenter": { title: "Student Center Scheduled Support", body: "Add description here.", finalized: false },
+    "t2a-supportgroups": { title: "Support Groups or Appointments", body: "Add description here.", finalized: false }
+  };
+</script>
+
+<script>
+  const popupContent = window.POPUP_DATA;
+  let editMode = false;
+  let activeKey = null;
+  let activeLinkKey = null;
+
+  function escapeHtml(str){
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  function formatBody(raw){
+    let safe = escapeHtml(raw);
+    // [label](url) -> link
+    safe = safe.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
+      '<a href="$2" target="_blank" rel="noopener">$1</a>');
+    // bare URLs -> link (skip ones already inside an href="...")
+    safe = safe.replace(/(^|[^"'>])((https?:\/\/[^\s<]+))/g,
+      '$1<a href="$2" target="_blank" rel="noopener">$2</a>');
+    return safe;
+  }
+
+  const overlay = document.getElementById('modal-overlay');
+  const viewContent = document.getElementById('view-mode-content');
+  const editContent = document.getElementById('edit-mode-content');
+  const linkEditContent = document.getElementById('link-edit-content');
+
+  const modalTitle = document.getElementById('modal-title');
+  const modalBody = document.getElementById('modal-body');
+  const closeBtn = document.getElementById('modal-close');
+  const cancelBtn = document.getElementById('modal-cancel');
+  const saveBtn = document.getElementById('modal-save');
+  const editTitleInput = document.getElementById('edit-title');
+  const editBodyInput = document.getElementById('edit-body');
+
+  const linkCancelBtn = document.getElementById('link-cancel');
+  const linkSaveBtn = document.getElementById('link-save');
+  const editLinkLabel = document.getElementById('edit-link-label');
+  const editLinkUrl = document.getElementById('edit-link-url');
+
+  const editModeToggle = document.getElementById('edit-mode-toggle');
+  const exportBtn = document.getElementById('export-btn');
+  const progressCounter = document.getElementById('progress-counter');
+
+  function hideAllPanels(){
+    viewContent.style.display = 'none';
+    editContent.style.display = 'none';
+    linkEditContent.style.display = 'none';
+  }
+
+  function openBoxModal(key){
+    activeKey = key;
+    const data = popupContent[key];
+    if(!data) return;
+    overlay.classList.add('open');
+    hideAllPanels();
+    if(editMode){
+      editTitleInput.value = data.title;
+      editBodyInput.value = data.body;
+      editContent.style.display = 'block';
+    } else {
+      modalTitle.textContent = data.title;
+      modalBody.innerHTML = formatBody(data.body);
+      viewContent.style.display = 'block';
+    }
+  }
+
+  function openLinkModal(linkEl){
+    activeLinkKey = linkEl.dataset.linkKey;
+    overlay.classList.add('open');
+    hideAllPanels();
+    editLinkLabel.value = linkEl.textContent.trim();
+    editLinkUrl.value = (linkEl.getAttribute('href') === '#') ? '' : linkEl.getAttribute('href');
+    linkEditContent.style.display = 'block';
+  }
+
+  function closeModal(){
+    overlay.classList.remove('open');
+    activeKey = null;
+    activeLinkKey = null;
+  }
+
+  function refreshFinalizedMarks(){
+    document.querySelectorAll('[data-key]').forEach(el => {
+      const d = popupContent[el.dataset.key];
+      el.classList.toggle('finalized', !!(d && d.finalized));
+    });
+    let total = Object.keys(popupContent).length;
+    let done = Object.values(popupContent).filter(d => d.finalized).length;
+    let linkEls = document.querySelectorAll('[data-link-key]');
+    let linkTotal = linkEls.length;
+    let linkDone = document.querySelectorAll('[data-link-key].finalized').length;
+    progressCounter.textContent = editMode
+      ? `Pop-ups finalized: ${done}/${total} · Links finalized: ${linkDone}/${linkTotal}`
+      : '';
+  }
+
+  document.querySelectorAll('.box[data-key], .tier-band[data-key], .meeting-band[data-key]').forEach(el => {
+    el.addEventListener('click', () => openBoxModal(el.dataset.key));
+    el.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        openBoxModal(el.dataset.key);
+      }
+    });
+  });
+
+  document.querySelectorAll('[data-link-key]').forEach(el => {
+    el.addEventListener('click', (e) => {
+      if(editMode){
+        e.preventDefault();
+        openLinkModal(el);
+      }
+      // if not editMode, let the link navigate normally
+    });
+  });
+
+  saveBtn.addEventListener('click', () => {
+    if(!activeKey) return;
+    popupContent[activeKey].title = editTitleInput.value.trim() || popupContent[activeKey].title;
+    popupContent[activeKey].body = editBodyInput.value.trim() || popupContent[activeKey].body;
+    popupContent[activeKey].finalized = true;
+    refreshFinalizedMarks();
+    closeModal();
+  });
+
+  linkSaveBtn.addEventListener('click', () => {
+    if(!activeLinkKey) return;
+    const el = document.querySelector(`[data-link-key="${activeLinkKey}"]`);
+    if(!el) return;
+    const newLabel = editLinkLabel.value.trim();
+    const newUrl = editLinkUrl.value.trim();
+    if(newLabel) el.textContent = newLabel;
+    if(newUrl) el.setAttribute('href', newUrl);
+    el.classList.add('finalized');
+    refreshFinalizedMarks();
+    closeModal();
+  });
+
+  closeBtn.addEventListener('click', closeModal);
+  cancelBtn.addEventListener('click', closeModal);
+  linkCancelBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', (e) => { if(e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeModal(); });
+
+  editModeToggle.addEventListener('change', () => {
+    editMode = editModeToggle.checked;
+    document.body.classList.toggle('edit-mode', editMode);
+    refreshFinalizedMarks();
+  });
+
+  exportBtn.addEventListener('click', () => {
+    const wasEditMode = editModeToggle.checked;
+    editModeToggle.checked = false;
+    document.body.classList.remove('edit-mode');
+
+    const clone = document.documentElement.cloneNode(true);
+    const dataScript = clone.querySelector('#popup-data');
+    dataScript.textContent = 'window.POPUP_DATA = ' + JSON.stringify(popupContent, null, 2) + ';';
+    clone.querySelector('#edit-mode-toggle').removeAttribute('checked');
+    clone.querySelectorAll('.open').forEach(el => el.classList.remove('open'));
+
+    const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'mtss-final.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    editModeToggle.checked = wasEditMode;
+    document.body.classList.toggle('edit-mode', wasEditMode);
+  });
+
+  refreshFinalizedMarks();
+</script>
+
+</body>
+</html>
