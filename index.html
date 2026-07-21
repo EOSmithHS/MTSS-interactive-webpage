@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EOS MTSS</title>
@@ -117,6 +116,7 @@
     margin-bottom: 8px;
   }
 
+  .row.cols-2{ grid-template-columns: repeat(2, 1fr); }
   .row.cols-3{ grid-template-columns: repeat(3, 1fr); }
   .row.cols-4{ grid-template-columns: repeat(4, 1fr); }
   .row.cols-5{ grid-template-columns: repeat(5, 1fr); }
@@ -298,11 +298,13 @@
 
   .modal{
     background: var(--paper);
-    max-width: 440px;
+    max-width: 600px;
     width:100%;
     padding: 22px 24px 24px;
     border-top: 6px solid var(--accent);
     box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+    max-height: 85vh;
+    overflow-y: auto;
   }
 
   .modal h3{
@@ -327,6 +329,33 @@
     text-decoration: none;
   }
 
+  .modal table{
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+
+  .modal table th{
+    background: var(--tier-bg);
+    color: var(--tier-fg);
+    padding: 7px 8px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 12px;
+  }
+
+  .modal table td{
+    padding: 7px 8px;
+    border: 1px solid #ccc;
+    vertical-align: top;
+    line-height: 1.4;
+  }
+
+  .modal table tr:nth-child(even) td{
+    background: #f7f7f7;
+  }
+
   .modal-close{
     background: var(--ink);
     color:#fff;
@@ -344,13 +373,9 @@
   }
 </style>
 </head>
-<body>
+<body class="edit-mode">
 
-<div class="toolbar">
-  <label><input type="checkbox" id="edit-mode-toggle"> Edit Mode</label>
-  <span class="progress" id="progress-counter"></span>
-  <button class="export-btn" id="export-btn">Export Final HTML</button>
-</div>
+
 
 <div class="chart">
 
@@ -361,75 +386,71 @@
   </div>
 
   <!-- TIER 1 -->
-  <div class="tier-band" data-key="banner-t1" tabindex="0">Tier 1 Instruction and Support</div>
-  <div class="row cols-3">
-    <div class="box" data-key="t1-tutoring" tabindex="0">
+  <div class="tier-band finalized" data-key="banner-t1" tabindex="0">Tier 1 Instruction and Academic Support</div>
+  <div class="row cols-2">
+    <div class="box finalized" data-key="t1-tutoring" tabindex="0">
       <span class="label">Peer tutoring and mentoring</span>
     </div>
-    <div class="box" data-key="t1-studyhall" tabindex="0">
+    <div class="box finalized" data-key="t1-studyhall" tabindex="0">
       <span class="label">Academic study halls</span><br>
       <span class="detail">Math, Science, Humanities, Freshmen<br>provides structured study halls</span>
     </div>
-    <div class="box" data-key="t1-studentcenter" tabindex="0">
-      <span class="label">Student Center sessions</span><br>
-      <span class="detail">not reoccuring &amp; no walk-ins</span>
-    </div>
   </div>
   <div class="cta-row">
-    <a class="cta-btn" id="link-t1-request" data-link-key="link-t1-request" href="#" target="_blank" rel="noopener">Click here to request and schedule a Tier 1 intervention</a>
+    <a class="cta-btn finalized" id="link-t1-request" data-link-key="link-t1-request" href="https://script.google.com/a/macros/stu.eosmith.org/s/AKfycbyr_tcVFTBaD4Zdsu7vGWeeEn3I0EuAJsQ4HvTsEDFjTxTtuHGfxQzAwVQapYoRQJC_/exec" target="_blank" rel="noopener">Click here to request and schedule a Tier 1 intervention</a>
   </div>
 
   <!-- TIER 2 referrals and support -->
-  <div class="tier-band" data-key="banner-t2" tabindex="0">Tier 2 Referrals and Support</div>
+  <div class="tier-band finalized" data-key="banner-t2" tabindex="0">Tier 2 Referral Process</div>
   <div class="note-box" style="margin-bottom:8px;">
     On a weekly basis students will be reviewed through these lenses and discussed with teachers.
     Teacher should contact the appropriate staff with student concerns in each of the categories listed.
   </div>
   <div class="row cols-4">
-    <div class="box" data-key="t2-academic" tabindex="0">
+    <div class="box finalized" data-key="t2-academic" tabindex="0">
       <span class="label">Academic:</span><br>
       <span class="detail">SAT review by counselors</span>
     </div>
-    <div class="box" data-key="t2-behavioral" tabindex="0">
+    <div class="box finalized" data-key="t2-behavioral" tabindex="0">
       <span class="label">Behavioral:</span><br>
       <span class="detail">Discipline referrals to admins</span>
     </div>
-    <div class="box" data-key="t2-socialemotional" tabindex="0">
+    <div class="box finalized" data-key="t2-socialemotional" tabindex="0">
       <span class="label">Social-Emotional:</span><br>
       <span class="detail">CAT review by social workers &amp; counselors</span>
     </div>
-    <div class="box" data-key="t2-attendance" tabindex="0">
-      <span class="label">Attendance Review Team</span> (formerly REACH):<br>
-      <span class="detail">Omar/Lou/Sam</span>
+    <div class="box finalized" data-key="t2-attendance" tabindex="0">
+      <span class="label">Attendance</span><br>
+      <span class="detail">Weekly data review by day and course</span>
     </div>
   </div>
-  <div class="meeting-band" data-key="banner-meeting" tabindex="0">MTSS Team Meeting: Weekly, one hour</div>
+  <div class="meeting-band finalized" data-key="banner-meeting" tabindex="0">MTSS Team Meeting: Weekly, one hour</div>
   <div class="cta-row multi">
-    <a class="cta-btn" id="link-refer-mtss" data-link-key="link-refer-mtss" href="#" target="_blank" rel="noopener">Refer a student to MTSS</a>
-    <a class="cta-btn" id="link-mtss-agenda" data-link-key="link-mtss-agenda" href="#" target="_blank" rel="noopener">View MTSS meeting agenda</a>
+    <a class="cta-btn finalized" id="link-refer-mtss" data-link-key="link-refer-mtss" href="https://eosmithhs.github.io/MTSS-referral-form/" target="_blank" rel="noopener">Refer a student to MTSS</a>
+    <a class="cta-btn finalized" id="link-mtss-agenda" data-link-key="link-mtss-agenda" href="https://docs.google.com/spreadsheets/d/1fR1gBfF3hqnBrDNx1FlZPBVcHtHRva3eplH7mmOZFG0/view?gid=935245952#gid=935245952" target="_blank" rel="noopener">View MTSS meeting agenda</a>
   </div>
 
   <!-- TIER 2 action steps -->
-  <div class="tier-band" data-key="banner-t2-action" tabindex="0">Tier 2 Action Steps</div>
+  <div class="tier-band finalized" data-key="banner-t2-action" tabindex="0">Tier 2 Action Steps</div>
   <div class="row cols-5">
-    <div class="box" data-key="t2a-literacy" tabindex="0">
+    <div class="box finalized" data-key="t2a-literacy" tabindex="0">
       <span class="detail">Literacy screenings and scheduled support</span>
     </div>
-    <div class="box" data-key="t2a-tutoring" tabindex="0">
+    <div class="box finalized" data-key="t2a-tutoring" tabindex="0">
       <span class="detail">Peer tutoring and mentoring</span>
     </div>
-    <div class="box" data-key="t2a-studyhall" tabindex="0">
+    <div class="box finalized" data-key="t2a-studyhall" tabindex="0">
       <span class="detail">Academic study halls: Math, Science, Humanities, Freshmen</span>
     </div>
-    <div class="box" data-key="t2a-studentcenter" tabindex="0">
+    <div class="box finalized" data-key="t2a-studentcenter" tabindex="0">
       <span class="detail">Student Center scheduled support</span>
     </div>
-    <div class="box" data-key="t2a-supportgroups" tabindex="0">
+    <div class="box finalized" data-key="t2a-supportgroups" tabindex="0">
       <span class="detail">Support groups or appointments</span>
     </div>
   </div>
 
-  <div class="review-band">Review after 6&ndash;8 weeks</div>
+  <div class="review-band">Review after 6–8 weeks</div>
 
 </div>
 
@@ -437,27 +458,28 @@
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
     <!-- View mode -->
-    <div id="view-mode-content">
+    <div id="view-mode-content" style="display: none;">
       <h3 id="modal-title">Title</h3>
       <p id="modal-body">Description goes here.</p>
       <button class="modal-close" id="modal-close">Close</button>
     </div>
     <!-- Edit mode -->
-    <div id="edit-mode-content" style="display:none;">
+    <div id="edit-mode-content" style="display: block;">
       <label class="field-label" for="edit-title">Pop-up title</label>
       <input type="text" id="edit-title">
       <label class="field-label" for="edit-body">Pop-up text</label>
-      <textarea id="edit-body" rows="6"></textarea>
+      <textarea id="edit-body" rows="6" placeholder="Add description here."></textarea>
       <p style="font-size:11px; color:#777; margin:-6px 0 10px;">
         Tip: to add a hyperlink, type <code>[link text](https://...)</code> — or just paste a full web address and it'll become clickable automatically.
       </p>
+      <div id="table-preview" style="display: none; margin-bottom: 12px; overflow-x: auto;"></div>
       <div class="modal-actions">
         <button class="modal-save" id="modal-save">Save as Final</button>
         <button class="modal-close" id="modal-cancel">Cancel</button>
       </div>
     </div>
     <!-- Link edit mode -->
-    <div id="link-edit-content" style="display:none;">
+    <div id="link-edit-content" style="display: none;">
       <label class="field-label" for="edit-link-label">Button text</label>
       <input type="text" id="edit-link-label">
       <label class="field-label" for="edit-link-url">Link URL</label>
@@ -470,28 +492,90 @@
   </div>
 </div>
 
-<script id="popup-data">
-  // Placeholder content for each clickable box.
-  // Edit Mode lets you fill these in directly on the page; "Save as Final" locks each one.
-  window.POPUP_DATA = {
-    "banner-t1": { title: "Tier 1 Instruction and Support", body: "Add description here.", finalized: false },
-    "t1-tutoring": { title: "Peer Tutoring and Mentoring", body: "Add description here.", finalized: false },
-    "t1-studyhall": { title: "Academic Study Halls", body: "Add description here.", finalized: false },
-    "t1-studentcenter": { title: "Student Center Sessions", body: "Add description here.", finalized: false },
-    "banner-t2": { title: "Tier 2 Referrals and Support", body: "Add description here.", finalized: false },
-    "t2-academic": { title: "Academic Referral", body: "Add description here.", finalized: false },
-    "t2-behavioral": { title: "Behavioral Referral", body: "Add description here.", finalized: false },
-    "t2-socialemotional": { title: "Social-Emotional Referral", body: "Add description here.", finalized: false },
-    "t2-attendance": { title: "Attendance Review Team", body: "Add description here.", finalized: false },
-    "banner-meeting": { title: "MTSS Team Meeting", body: "Add description here.", finalized: false },
-    "banner-t2-action": { title: "Tier 2 Action Steps", body: "Add description here.", finalized: false },
-    "t2a-literacy": { title: "Literacy Screenings & Scheduled Support", body: "Add description here.", finalized: false },
-    "t2a-tutoring": { title: "Peer Tutoring and Mentoring", body: "Add description here.", finalized: false },
-    "t2a-studyhall": { title: "Academic Study Halls", body: "Add description here.", finalized: false },
-    "t2a-studentcenter": { title: "Student Center Scheduled Support", body: "Add description here.", finalized: false },
-    "t2a-supportgroups": { title: "Support Groups or Appointments", body: "Add description here.", finalized: false }
-  };
-</script>
+<script id="popup-data">window.POPUP_DATA = {
+  "banner-t1": {
+    "title": "Tier 1 Instruction and Academic Support",
+    "body": "Tier 1 refers to the high-quality, evidence-based core instruction and universal behavioral supports provided to all students in a school. It is the foundation of the MTSS (Multi-Tiered System of Supports) framework and is designed to meet the needs of roughly 80% to 90% of the entire student population. Tier 1 supports are available to all students. At EO, we offer Academic Study Halls, Peer Tutoring, and Peer Mentoring.",
+    "finalized": true
+  },
+  "t1-tutoring": {
+    "title": "Peer Tutoring and Mentoring",
+    "body": "Peer tutoring is offered every period of the week and is held in the Peer Tutoring room adjacent to the Student Center. Teachers and students can request a peer tutor via the request form; the Student Center Coordinator facilitates the pairings and scheduling. Peer tutors complete outcome forms at the close of each session, detailing the activities and results.",
+    "finalized": true
+  },
+  "t1-studyhall": {
+    "title": "Academic Study Halls",
+    "body": "Academic Study Halls (ASH) are staffed by content-area teachers and offered every period of the week. Students can self-refer via the request form, or they can be referred by staff. Parents should reach out to a staff member to request an ASH for their EO student. ASH staff complete outcome forms at the close of each session, detailing the activities and results.",
+    "html": "<table><thead><tr><th>Which Academic Study Hall (ASH)?</th><th>Where is it held?</th><th>Who is there to help?</th></tr></thead><tbody><tr><td>Freshmen Academic Study Halls (FrASH)</td><td>LMC</td><td>Library Media Specialist, teachers of freshmen, peer tutors, peer mentors</td></tr><tr><td>Humanities Academic Study Hall (HASH)</td><td>English/Social Studies Common Area</td><td>English and Social Studies teachers</td></tr><tr><td>Math Academic Study Hall (MASH)</td><td>Room 118</td><td>Math teachers</td></tr><tr><td>Science Academic Study Hall (SASH)</td><td>Science classrooms</td><td>Science teachers</td></tr><tr><td>Fine Arts Academic Study Hall (FASH)</td><td>Art classrooms</td><td>Art teachers</td></tr><tr><td>CTE, World Language, Health/PE</td><td>Student Center</td><td>Content-area teachers, UConn interns, Student Center Coordinator</td></tr></tbody></table>",
+    "finalized": true
+  },
+  "t1-studentcenter": {
+    "title": "Student Center Sessions",
+    "body": "Add description here.",
+    "finalized": false
+  },
+  "banner-t2": {
+    "title": "Tier 2 Referrals and Support",
+    "body": "The teams below will review students on a weekly basis. Each team will determine if further investigation is needed, if any Tier 1 interventions are needed, or if an MTSS referral is appropriate. \n* Indicates team leader responsible for preparing and previewing data prior to the meeting\n\nPossible investigation sources and protocols: root cause questionnaire, staff and parent feedback, behavior/performance patterns-recent and long-term, literacy screen, social-emotional screen, standardized test scores, health conditions.\n\nPossible interventions prior to referral:  check-in and check-out, schedule adjustments, counseling, peer tutor/mentor, home visits, student center, academic study halls, support group, reading support, community mentor, behavior intervention plan, 504/special education referral\n\nEach data review team has the option to refer a student to the MTSS system after conducting further investigation beyond their original area of concern.  A common referral form will be used and submitted at least 24 hours prior to the MTSS team meeting.  The referring team will present their rationale for the referral submission, intervention attempts and specific questions for the MTSS team.",
+    "finalized": true
+  },
+  "t2-academic": {
+    "title": "Academic Referral",
+    "body": "*Melissa Tubbs, school counselors",
+    "finalized": true
+  },
+  "t2-behavioral": {
+    "title": "Behavioral",
+    "body": "*Dave Tanner, Dan Uriano, Lou DeLoreto, Steve Bayne, case managers and teachers as needed",
+    "finalized": true
+  },
+  "t2-socialemotional": {
+    "title": "Social-Emotional",
+    "body": "*Shannon Cartier/Karyn Zlotnick, Collaborative Assistance Team members as needed",
+    "finalized": true
+  },
+  "t2-attendance": {
+    "title": "Attendance Review Team",
+    "body": "(formally REACH) *Omar Rosario, Lou DeLoreto, Sam Murdoch, teachers",
+    "finalized": true
+  },
+  "banner-meeting": {
+    "title": "MTSS Team Meeting",
+    "body": "MTSS meetings will be held on a weekly basis and include relevant members of the teams listed above, as well as involved staff. The MTSS coordinators (Melissa Tubbs and Lou DeLoreto) will assume the responsibilities of previewing the referral submissions, setting the agenda, facilitating actions plans and assigning follow-up actions assigned to staff.  MTSS coordinators are also responsible for communicating the action plan to appropriate stakeholders, progress monitoring the intervention, and updating the MTSS team. \n\nThe meetings will focus on student referrals, student exit reviews, and review of student performance data sets.",
+    "finalized": true
+  },
+  "banner-t2-action": {
+    "title": "Tier 2 Action Steps",
+    "body": "In a Multi-Tiered System of Supports (MTSS), a Tier 2 support cycle refers to the structured, data-driven process of providing supplemental interventions to students who need extra support to meet grade-level academic or behavioral expectations. It operates as a short-term, iterative feedback loop—typically lasting 6 to 8 weeks—designed to target specific skill gaps. Tier 2 typically targets 15-20% of the student population.",
+    "finalized": true
+  },
+  "t2a-literacy": {
+    "title": "Literacy Screenings & Scheduled Support",
+    "body": "Literacy screenings are conducted for students referred for Tier 2 intervention. Screening results, along with referral data (standardized test scores and current grades), are used to develop a reading profile identifying areas of need. Screenings include the Qualitative Reading Inventory-7 (QRI-7) Word Lists and Passage to assess decoding, fluency, and comprehension. Additional decoding and spelling assessments are administered as needed to identify specific skill deficits. Appropriate interventions are recommended based on areas of deficit found.",
+    "finalized": true
+  },
+  "t2a-tutoring": {
+    "title": "Peer Tutoring and Mentoring",
+    "body": "Peer Tutoring at the Tier 2 level focuses on skill development and not simply work completion. MTSS coordinators will work with the Student Center Coordinator and tutors to ensure the intervention is appropriate and effective.",
+    "finalized": true
+  },
+  "t2a-studyhall": {
+    "title": "Academic Study Halls",
+    "body": "ASH support at the Tier 2 level focuses on skill development and not simply work completion. MTSS coordinators will work with the involved staff to ensure the intervention is appropriate and effective.",
+    "html": "<table><thead><tr><th>Which Academic Study Hall (ASH)?</th><th>Where is it held?</th><th>Who is there to help?</th></tr></thead><tbody><tr><td>Freshmen Academic Study Halls (FrASH)</td><td>LMC</td><td>Library Media Specialist, teachers of freshmen, peer tutors, peer mentors</td></tr><tr><td>Humanities Academic Study Hall (HASH)</td><td>English/Social Studies Common Area</td><td>English and Social Studies teachers</td></tr><tr><td>Math Academic Study Hall (MASH)</td><td>Room 118</td><td>Math teachers</td></tr><tr><td>Science Academic Study Hall (SASH)</td><td>Science classrooms</td><td>Science teachers</td></tr><tr><td>Fine Arts Academic Study Hall (FASH)</td><td>Art classrooms</td><td>Art teachers</td></tr><tr><td>CTE, World Language, Health/PE</td><td>Student Center</td><td>Content-area teachers, UConn interns, Student Center Coordinator</td></tr></tbody></table>",
+    "finalized": true
+  },
+  "t2a-studentcenter": {
+    "title": "Student Center Scheduled Support",
+    "body": "Students who are hard-scheduled into the Student Center for a Tier 2 cycle will receive the support interventions from either the Student Center Coordinator and/or the interns and content area teachers on staff.",
+    "finalized": true
+  },
+  "t2a-supportgroups": {
+    "title": "Support Groups or Appointments",
+    "body": "Students may be scheduled into support groups, facilitated by social workers and school psychologists, or have scheduled individual weekly meetings with support staff.",
+    "finalized": true
+  }
+};</script>
 
 <script>
   const popupContent = window.POPUP_DATA;
@@ -553,11 +637,22 @@
     hideAllPanels();
     if(editMode){
       editTitleInput.value = data.title;
-      editBodyInput.value = data.body;
+      editBodyInput.value = data.body === 'Add description here.' ? '' : data.body;
+      editBodyInput.placeholder = data.html
+        ? 'Optional: add introductory text above the table...'
+        : 'Add description here.';
+      document.getElementById('table-preview').style.display = data.html ? 'block' : 'none';
+      document.getElementById('table-preview').innerHTML = data.html
+        ? '<p style="font-size:11px;color:#777;margin:0 0 4px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Table (fixed — always appears below your text)</p>' + data.html
+        : '';
       editContent.style.display = 'block';
     } else {
       modalTitle.textContent = data.title;
-      modalBody.innerHTML = formatBody(data.body);
+      if(data.html){
+        modalBody.innerHTML = (data.body && data.body !== 'Add description here.' ? '<p style="margin:0 0 12px;">' + formatBody(data.body) + '</p>' : '') + data.html;
+      } else {
+        modalBody.innerHTML = formatBody(data.body);
+      }
       viewContent.style.display = 'block';
     }
   }
@@ -675,5 +770,6 @@
   refreshFinalizedMarks();
 </script>
 
-</body>
-</html>
+
+
+</body></html>
